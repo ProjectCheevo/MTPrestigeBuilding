@@ -90,10 +90,14 @@ header {
 
 .logo-half.left {
   transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 1s ease, opacity 1s ease;
 }
 
 .logo-half.right {
   transform: translateY(20px);
+  opacity: 0;
+  transition: transform 1s ease, opacity 1s ease;
 }
 
 .logo-animation.loaded .logo-half {
