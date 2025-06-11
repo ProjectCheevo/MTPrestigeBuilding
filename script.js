@@ -17,20 +17,20 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(showNextSlide, 5000);
 });
 
-    async function includeHTML(id, url) {
-      const container = document.getElementById(id);
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-        container.innerHTML = await res.text();
-      } catch (e) {
-        console.error(e);
-        // Optionally show a fallback or hide the container
-      }
-    }
+async function includeHTML(id, url) {
+  const container = document.getElementById(id);
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+    container.innerHTML = await res.text();
+  } catch (e) {
+    console.error(e);
+    // Optionally show a fallback or hide the container
+  }
+}
 
-    includeHTML('site-header', '/inserts/header.html');
-    includeHTML('site-footer', '/inserts/footer.html');
+includeHTML('site-header', '/includes/header.html');
+includeHTML('site-footer', '/includes/footer.html');
 
 window.addEventListener("load", () => {
   const logoAnim = document.querySelector(".logo-animation");
