@@ -1,22 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const slides = document.querySelectorAll(".slide");
-  let currentSlide = 0;
 
-  function showNextSlide() {
-    // Remove "active" from current
-    slides[currentSlide].classList.remove("active");
-
-    // Move to next (or loop to first)
-    currentSlide = (currentSlide + 1) % slides.length;
-
-    // Add "active" to new current
-    slides[currentSlide].classList.add("active");
-  }
-
-  // Rotate every 5 seconds
-  setInterval(showNextSlide, 5000);
-});
-
+// 1. Generic includeHTML stays the same — it returns a Promise
 async function includeHTML(id, url) {
   const container = document.getElementById(id);
   try {
@@ -25,69 +8,76 @@ async function includeHTML(id, url) {
     container.innerHTML = await res.text();
   } catch (e) {
     console.error(e);
-    // Optionally show a fallback or hide the container
   }
 }
 
-includeHTML('site-header', '/includes/header.html');
-includeHTML('site-footer', '/includes/footer.html');
-
-window.addEventListener("load", () => {
-  const logoAnim = document.querySelector(".logo-animation");
+// 2. Animation init extracted into its own function
+function triggerLogoAnimation() {
+  const logoAnim   = document.querySelector(".logo-animation");
   const logoWrapper = document.querySelector(".logo");
 
-  if (logoAnim) {
-    logoAnim.classList.add("loaded");
-  }
+  if (logoAnim)    logoAnim.classList.add("loaded");
+  if (logoWrapper) logoWrapper.classList.add("loaded");
+}
 
-  if (logoWrapper) {
-    logoWrapper.classList.add("loaded");
-  }
-});
+// 3. Slide-rotator
+function initSlides() {
+  const slides = document.querySelectorAll(".slide");
+  let currentSlide = 0;
+  setInterval(() => {
+    slides[currentSlide].classList.remove("active");
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add("active");
+  }, 5000);
+}
 
-document.addEventListener("DOMContentLoaded", () => {
+// 4. Scroll-triggered fades
+function initFadeIns() {
   const fadeEls = document.querySelectorAll(".fade-in, .fade-in-up");
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          obs.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
-  fadeEls.forEach(el => observer.observe(el));
-});
+  const obs = new IntersectionObserver((entries, o) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        o.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  fadeEls.forEach(el => obs.observe(el));
+}
 
-// script.js
-
-document.addEventListener("DOMContentLoaded", () => {
-  const track = document.querySelector(".carousel-track");
+// 5. Carousel
+function initCarousel() {
+  const track   = document.querySelector(".carousel-track");
   const prevBtn = document.querySelector(".carousel-btn.prev");
   const nextBtn = document.querySelector(".carousel-btn.next");
-  const cards = document.querySelectorAll(".news-card");
-
+  const cards   = document.querySelectorAll(".news-card");
   let currentIndex = 0;
-  const cardWidth = cards[0].offsetWidth + 24; // includes gap
+  const cardWidth  = cards[0].offsetWidth + 24;
 
-  // Scroll to card index
-  const scrollToCard = (index) => {
+  function scrollToCard(i) {
     const maxIndex = cards.length - Math.floor(track.offsetWidth / cardWidth);
-    currentIndex = Math.max(0, Math.min(index, maxIndex));
+    currentIndex = Math.max(0, Math.min(i, maxIndex));
     track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
-  };
+  }
 
-  nextBtn.addEventListener("click", () => {
-    scrollToCard(currentIndex + 1);
-  });
+  nextBtn.addEventListener("click", () => scrollToCard(currentIndex + 1));
+  prevBtn.addEventListener("click", () => scrollToCard(currentIndex - 1));
+  window.addEventListener("resize", () => scrollToCard(currentIndex));
+}
 
-  prevBtn.addEventListener("click", () => {
-    scrollToCard(currentIndex - 1);
-  });
+// 6. Kick everything off once DOM is parsed
+document.addEventListener("DOMContentLoaded", () => {
+  // First inject header…when that’s done, run logo animation
+  includeHTML("site-header", "./includes/header.html")
+    .then(() => {
+      triggerLogoAnimation();
+    });
 
-  window.addEventListener("resize", () => {
-    scrollToCard(currentIndex); // Recalculate on resize
-  });
+  // Inject footer in parallel (no animation tied to it)
+  includeHTML("site-footer", "./includes/footer.html");
+
+  // Initialize the rest immediately
+  initSlides();
+  initFadeIns();
+  initCarousel();
 });
