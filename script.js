@@ -1,9 +1,3 @@
-/**
- * Fetches an HTML fragment and injects it into the container with the given ID.
- * @param {string} id  - The ID of the container element.
- * @param {string} url - The URL of the HTML fragment to load.
- * @returns {Promise<void>}
- */
 async function includeHTML(id, url) {
   const container = document.getElementById(id);
   if (!container) {
@@ -17,24 +11,26 @@ async function includeHTML(id, url) {
     const html = await res.text();
     container.innerHTML = html;
   } catch (err) {
-    console.error(`includeHTML error for "${id}" → ${err}`);
+    console.error(`includeHTML error for "${id}": ${err}`);
   }
 }
 
 /**
- * Adds the `.loaded` class to your logo elements to kick off CSS transitions.
+ * Adds the `.loaded` class to logo elements on the next animation frame,
+ * ensuring the browser renders the initial state first.
  */
 function triggerLogoAnimation() {
-  const logoAnim    = document.querySelector(".logo-animation");
-  const logoWrapper = document.querySelector(".logo");
+  requestAnimationFrame(() => {
+    const logoAnim    = document.querySelector(".logo-animation");
+    const logoWrapper = document.querySelector(".logo");
 
-  if (logoAnim)    logoAnim.classList.add("loaded");
-  if (logoWrapper) logoWrapper.classList.add("loaded");
+    if (logoAnim)    logoAnim.classList.add("loaded");
+    if (logoWrapper) logoWrapper.classList.add("loaded");
+  });
 }
 
 /**
- * Cycles through any elements with the `.slide` class, toggling the `.active` class.
- * Slides change every 5 seconds.
+ * Cycles through elements with the `.slide` class, toggling the `.active` class every 5 seconds.
  */
 function initSlides() {
   const slides = document.querySelectorAll(".slide");
@@ -51,7 +47,7 @@ function initSlides() {
 }
 
 /**
- * Uses IntersectionObserver to fade in any elements with `.fade-in` or `.fade-in-up`.
+ * Fades in elements with `.fade-in` or `.fade-in-up` using IntersectionObserver.
  */
 function initFadeIns() {
   const elements = document.querySelectorAll(".fade-in, .fade-in-up");
@@ -70,8 +66,7 @@ function initFadeIns() {
 }
 
 /**
- * Initializes the horizontal carousel for elements inside `.carousel-track`.
- * Prev/Next buttons move by one card at a time.
+ * Initializes the horizontal carousel for `.news-card` items.
  */
 function initCarousel() {
   const track   = document.querySelector(".carousel-track");
@@ -79,7 +74,7 @@ function initCarousel() {
   const nextBtn = document.querySelector(".carousel-btn.next");
   const cards   = document.querySelectorAll(".news-card");
 
-  if (!track || !prevBtn || !nextBtn || cards.length === 0) return;
+  if (!track || !prevBtn || !nextBtn || !cards.length) return;
 
   let currentIndex = 0;
   const gap        = parseInt(getComputedStyle(track).columnGap, 10) || 0;
@@ -97,17 +92,17 @@ function initCarousel() {
   window.addEventListener("resize", () => scrollTo(currentIndex));
 }
 
-// Kick everything off once the DOM is ready
+// Kick everything off once the DOM is fully parsed
 document.addEventListener("DOMContentLoaded", () => {
   // 1) Inject header, then trigger logo animation
   includeHTML("site-header", "./includes/header.html")
     .then(triggerLogoAnimation)
     .catch(err => console.error("Header include failed:", err));
 
-  // 2) Inject footer (no post-load action needed)
+  // 2) Inject footer in parallel
   includeHTML("site-footer", "./includes/footer.html");
 
-  // 3) Initialize slideshow, fade-ins, and carousel
+  // 3) Initialize other UI features
   initSlides();
   initFadeIns();
   initCarousel();
