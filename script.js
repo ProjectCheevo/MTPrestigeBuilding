@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    includeHTML('site-header', '/includes/header.html');
-    includeHTML('site-footer', '/includes/footer.html');
+    includeHTML('site-header', '/inserts/header.html');
+    includeHTML('site-footer', '/inserts/footer.html');
 
 window.addEventListener("load", () => {
   const logoAnim = document.querySelector(".logo-animation");
