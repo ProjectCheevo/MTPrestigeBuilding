@@ -1,3 +1,11 @@
+// script.js
+
+/**
+ * Fetches an HTML fragment and injects it into the container with the given ID.
+ * @param {string} id  - The ID of the container element.
+ * @param {string} url - The URL of the HTML fragment to load.
+ * @returns {Promise<void>}
+ */
 async function includeHTML(id, url) {
   const container = document.getElementById(id);
   if (!container) {
@@ -16,10 +24,22 @@ async function includeHTML(id, url) {
 }
 
 /**
+ * Resets the logo elements to their un-animated state.
+ */
+function resetLogoState() {
+  const logoAnim    = document.querySelector(".logo-animation");
+  const logoWrapper = document.querySelector(".logo");
+  if (logoAnim)    logoAnim.classList.remove("loaded");
+  if (logoWrapper) logoWrapper.classList.remove("loaded");
+}
+
+/**
  * Adds the `.loaded` class to logo elements on the next animation frame,
  * ensuring the browser renders the initial state first.
+ * Also resets state first so it animates every time.
  */
 function triggerLogoAnimation() {
+  resetLogoState();
   requestAnimationFrame(() => {
     const logoAnim    = document.querySelector(".logo-animation");
     const logoWrapper = document.querySelector(".logo");
