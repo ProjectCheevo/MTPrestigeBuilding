@@ -1,82 +1,113 @@
-
-// 1. Generic includeHTML stays the same — it returns a Promise
+/**
+ * Fetches an HTML fragment and injects it into the container with the given ID.
+ * @param {string} id  - The ID of the container element.
+ * @param {string} url - The URL of the HTML fragment to load.
+ * @returns {Promise<void>}
+ */
 async function includeHTML(id, url) {
   const container = document.getElementById(id);
+  if (!container) {
+    console.error(`includeHTML: no element with ID "${id}"`);
+    return;
+  }
+
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-    container.innerHTML = await res.text();
-  } catch (e) {
-    console.error(e);
+    const html = await res.text();
+    container.innerHTML = html;
+  } catch (err) {
+    console.error(`includeHTML error for "${id}" → ${err}`);
   }
 }
 
-// 2. Animation init extracted into its own function
+/**
+ * Adds the `.loaded` class to your logo elements to kick off CSS transitions.
+ */
 function triggerLogoAnimation() {
-  const logoAnim   = document.querySelector(".logo-animation");
+  const logoAnim    = document.querySelector(".logo-animation");
   const logoWrapper = document.querySelector(".logo");
 
   if (logoAnim)    logoAnim.classList.add("loaded");
   if (logoWrapper) logoWrapper.classList.add("loaded");
 }
 
-// 3. Slide-rotator
+/**
+ * Cycles through any elements with the `.slide` class, toggling the `.active` class.
+ * Slides change every 5 seconds.
+ */
 function initSlides() {
   const slides = document.querySelectorAll(".slide");
-  let currentSlide = 0;
+  if (!slides.length) return;
+
+  let current = 0;
+  slides[current].classList.add("active");
+
   setInterval(() => {
-    slides[currentSlide].classList.remove("active");
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add("active");
+    slides[current].classList.remove("active");
+    current = (current + 1) % slides.length;
+    slides[current].classList.add("active");
   }, 5000);
 }
 
-// 4. Scroll-triggered fades
+/**
+ * Uses IntersectionObserver to fade in any elements with `.fade-in` or `.fade-in-up`.
+ */
 function initFadeIns() {
-  const fadeEls = document.querySelectorAll(".fade-in, .fade-in-up");
-  const obs = new IntersectionObserver((entries, o) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        o.unobserve(e.target);
+  const elements = document.querySelectorAll(".fade-in, .fade-in-up");
+  if (!elements.length) return;
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        obs.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
-  fadeEls.forEach(el => obs.observe(el));
+
+  elements.forEach(el => observer.observe(el));
 }
 
-// 5. Carousel
+/**
+ * Initializes the horizontal carousel for elements inside `.carousel-track`.
+ * Prev/Next buttons move by one card at a time.
+ */
 function initCarousel() {
   const track   = document.querySelector(".carousel-track");
   const prevBtn = document.querySelector(".carousel-btn.prev");
   const nextBtn = document.querySelector(".carousel-btn.next");
   const cards   = document.querySelectorAll(".news-card");
-  let currentIndex = 0;
-  const cardWidth  = cards[0].offsetWidth + 24;
 
-  function scrollToCard(i) {
-    const maxIndex = cards.length - Math.floor(track.offsetWidth / cardWidth);
-    currentIndex = Math.max(0, Math.min(i, maxIndex));
+  if (!track || !prevBtn || !nextBtn || cards.length === 0) return;
+
+  let currentIndex = 0;
+  const gap        = parseInt(getComputedStyle(track).columnGap, 10) || 0;
+  const cardWidth  = cards[0].offsetWidth + gap;
+
+  function scrollTo(index) {
+    const visibleCount = Math.floor(track.offsetWidth / cardWidth);
+    const maxIndex     = cards.length - visibleCount;
+    currentIndex = Math.max(0, Math.min(index, maxIndex));
     track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
   }
 
-  nextBtn.addEventListener("click", () => scrollToCard(currentIndex + 1));
-  prevBtn.addEventListener("click", () => scrollToCard(currentIndex - 1));
-  window.addEventListener("resize", () => scrollToCard(currentIndex));
+  nextBtn.addEventListener("click", () => scrollTo(currentIndex + 1));
+  prevBtn.addEventListener("click", () => scrollTo(currentIndex - 1));
+  window.addEventListener("resize", () => scrollTo(currentIndex));
 }
 
-// 6. Kick everything off once DOM is parsed
+// Kick everything off once the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  // First inject header…when that’s done, run logo animation
+  // 1) Inject header, then trigger logo animation
   includeHTML("site-header", "./includes/header.html")
-    .then(() => {
-      triggerLogoAnimation();
-    });
+    .then(triggerLogoAnimation)
+    .catch(err => console.error("Header include failed:", err));
 
-  // Inject footer in parallel (no animation tied to it)
+  // 2) Inject footer (no post-load action needed)
   includeHTML("site-footer", "./includes/footer.html");
 
-  // Initialize the rest immediately
+  // 3) Initialize slideshow, fade-ins, and carousel
   initSlides();
   initFadeIns();
   initCarousel();
