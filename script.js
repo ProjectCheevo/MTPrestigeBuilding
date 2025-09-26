@@ -1,12 +1,13 @@
+// ===== DOM READY =====
 document.addEventListener("DOMContentLoaded", () => {
   // ===== SLIDESHOW =====
   const slides = document.querySelectorAll(".slide");
   let currentSlide = 0;
 
   function showNextSlide() {
-    slides[currentSlide].classList.remove("active");
+    slides[currentSlide]?.classList.remove("active");
     currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add("active");
+    slides[currentSlide]?.classList.add("active");
   }
 
   if (slides.length > 0) {
@@ -36,35 +37,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (track && cards.length > 0) {
     let currentIndex = 0;
-    const cardWidth = cards[0].offsetWidth + 24;
+
+    const getCardWidth = () => cards[0].offsetWidth + 24;
 
     const scrollToCard = (index) => {
+      const cardWidth = getCardWidth();
       const maxIndex = cards.length - Math.floor(track.offsetWidth / cardWidth);
       currentIndex = Math.max(0, Math.min(index, maxIndex));
       track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
     };
 
-    nextBtn?.addEventListener("click", () => {
-      scrollToCard(currentIndex + 1);
-    });
+    nextBtn?.addEventListener("click", () => scrollToCard(currentIndex + 1));
+    prevBtn?.addEventListener("click", () => scrollToCard(currentIndex - 1));
 
-    prevBtn?.addEventListener("click", () => {
-      scrollToCard(currentIndex - 1);
-    });
-
-    window.addEventListener("resize", () => {
-      scrollToCard(currentIndex);
-    });
+    window.addEventListener("resize", () => scrollToCard(currentIndex));
   }
 });
 
 // ===== LOGO ANIMATION ON LOAD =====
 window.addEventListener("load", () => {
-  const logoAnim = document.querySelector(".logo-animation");
-  const logoWrapper = document.querySelector(".logo");
-
-  logoAnim?.classList.add("loaded");
-  logoWrapper?.classList.add("loaded");
+  document.querySelector(".logo-animation")?.classList.add("loaded");
+  document.querySelector(".logo")?.classList.add("loaded");
 });
 
 // ===== INCLUDE HTML PARTIALS =====
@@ -77,9 +70,10 @@ async function includeHTML(id, url) {
     container.innerHTML = await res.text();
   } catch (e) {
     console.error(e);
-    // Optionally, show fallback or hide the container
+    // Optional: container.innerHTML = "<!-- failed to load partial -->";
   }
 }
 
-includeHTML('site-header', '/inserts/header.html');
-includeHTML('site-footer', '/inserts/footer.html');
+// Load your header + footer
+includeHTML("site-header", "/inserts/header.html");
+includeHTML("site-footer", "/inserts/footer.html");
