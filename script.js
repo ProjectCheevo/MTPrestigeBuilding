@@ -75,6 +75,7 @@ async function includeHTML(id, url) {
 }
 
 // Load your header + footer
-includeHTML("site-header", "/header.html");
-includeHTML("site-footer", "/footer.html");
+includeHTML("site-header", "header.html");
+includeHTML("site-footer", "footer.html");
+
 
