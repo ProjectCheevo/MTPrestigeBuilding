@@ -61,21 +61,22 @@ window.addEventListener("load", () => {
 });
 
 // ===== INCLUDE HTML PARTIALS =====
-async function includeHTML(id, url) {
-  const container = document.getElementById(id);
-  if (!container) return;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-    container.innerHTML = await res.text();
-  } catch (e) {
-    console.error(e);
-    // Optional: container.innerHTML = "<!-- failed to load partial -->";
-  }
-}
+//async function includeHTML(id, url) {
+//  const container = document.getElementById(id);
+//  if (!container) return;
+// try {
+//    const res = await fetch(url);
+//    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+//    container.innerHTML = await res.text();
+//  } catch (e) {
+//    console.error(e);
+//    // Optional: container.innerHTML = "<!-- failed to load partial -->";
+//  }
+//}
 
 // Load your header + footer
-includeHTML("site-header", "header.html");
-includeHTML("site-footer", "footer.html");
+//includeHTML("site-header", "header.html");
+//includeHTML("site-footer", "footer.html");
+
 
 
