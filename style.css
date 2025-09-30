@@ -170,6 +170,56 @@ nav a:hover {
   width: 100%;
 }
 
+/* ===== Burger button styling ===== */
+.burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
+.burger-bar {
+    width: 30px;
+    height: 4px;
+    background: #8000ff;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+
+/* ===== Mobile Nav ===== */
+@media (max-width: 800px) {
+    nav {
+        position: relative;
+    }
+    .burger {
+        display: flex;
+    }
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        width: 200px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        display: none;
+    }
+    .nav-links.open {
+        display: flex;
+    }
+    .nav-links li {
+        margin: 10px 0;
+        text-align: right;
+    }
+    .dropdown {
+        position: static; /* disables hover dropdown, you may want to handle submenu differently for mobile */
+    }
+}
+
 /* ===== SHOWCASE SLIDESHOW ===== */
 .showcase {
   position: relative;
@@ -730,3 +780,4 @@ footer {
   .text-content p { font-size: 1rem; }
   .carousel-btn { font-size: 1rem; padding: 0.3rem 0.6rem; }
 }
+
