@@ -102,6 +102,86 @@ button {
   transform: translateY(0);
 }
 
+/* =============== GENERIC PAGE LAYOUT =============== */
+.page {
+  display: block;
+  padding: calc(var(--header-height) + 2.5rem) 0 6rem;
+}
+
+.page-header {
+  padding: clamp(3rem, 7vw, 5rem) 0 3rem;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, rgba(138, 99, 255, 0.18), rgba(21, 21, 29, 0.4) 65%, transparent);
+}
+
+.page-header__inner,
+.page-section__inner {
+  width: min(100%, 68rem);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.page-header__eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.page-header__title {
+  font-size: clamp(2.25rem, 4vw, 2.9rem);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.page-header__meta {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.page-section {
+  padding: clamp(2.5rem, 5vw, 3.75rem) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(21, 21, 29, 0.7), rgba(12, 12, 15, 0.45));
+}
+
+.page-section:last-of-type {
+  border-bottom: none;
+  background: transparent;
+}
+
+.page-section__inner > * {
+  margin: 0;
+}
+
+.page-section__inner > * + * {
+  margin-top: 1rem;
+}
+
+.page-section p {
+  color: var(--color-muted);
+}
+
+.page-section ul {
+  margin: 1.25rem 0 0;
+  padding: 0 0 0 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+  color: var(--color-muted);
+}
+
+.page-section li strong {
+  color: var(--color-text);
+}
+
+.page-section address {
+  font-style: normal;
+  color: var(--color-muted);
+}
+
 /* =============== HEADER =============== */
 .site-header {
   position: sticky;
@@ -741,3 +821,4 @@ button {
     justify-content: flex-end;
   }
 }
+
