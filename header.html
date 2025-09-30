@@ -1,31 +1,64 @@
-<header>
-    <div class="logo">
-        <div class="logo-animation">
-            <img src="assets/simplifiedLogoLeft.png" class="logo-half left" alt="MT logo left" aria-label="Left half of MT logo">
-            <img src="assets/simplifiedLogoRight.png" class="logo-half right" alt="MT logo right" aria-label="Right half of MT Logo">
-        </div>
-        <img src="assets/simplifiedLogoText.png" class="logo-text-img" alt="MT Prestige Building text" aria-label="MT Prestige Building">
-    </div>
-    <nav>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li>
-                <a href="general-services.html">Services</a>
-                <ul class="dropdown">
-                    <li><a href="services/roofing.html">Brickwork</a></li>
-                    <li><a href="services/flooring.html">Landscaping</a></li>
-                    <li><a href="services/general-services.html">Renovations</a></li>
-                    <li><a href="services/other-services.html">Other Services</a></li>
-                </ul>
-            </li>
-            <li><a href="about.html">About Us</a></li>
-            <li>
-                <a href="pricing/quote.html">Pricing</a>
-                <ul class="dropdown">
-                    <li><a href="pricing/quote.html">Get a Quote</a></li>
-                </ul>
-            </li>
-            <li><a href="contact.html">Contact Us</a></li>
-        </ul>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html" data-brand>
+      <span class="brand__mark" aria-hidden="true">
+        <img src="assets/simplifiedLogoLeft.png" class="brand__half brand__half--left" alt="" />
+        <img src="assets/simplifiedLogoRight.png" class="brand__half brand__half--right" alt="" />
+      </span>
+      <img src="assets/simplifiedLogoText.png" class="brand__wordmark" alt="MT Prestige Building" />
+    </a>
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+      data-nav-toggle
+    >
+      <span class="visually-hidden">Toggle navigation</span>
+      <span class="nav-toggle__bars" aria-hidden="true">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </span>
+    </button>
+    <nav class="site-nav" id="primary-navigation" aria-label="Primary" data-site-nav>
+      <ul class="site-nav__list">
+        <li class="site-nav__item">
+          <a class="site-nav__link" href="index.html">Home</a>
+        </li>
+        <li class="site-nav__item has-submenu">
+          <div class="site-nav__parent">
+            <a class="site-nav__link" href="services/general-work.html">Services</a>
+            <button class="site-nav__submenu-toggle" type="button" aria-expanded="false" data-submenu-toggle>
+              <span class="visually-hidden">Toggle services menu</span>
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M3.25 6l4.25 4 4.25-4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <ul class="site-nav__submenu">
+            <li><a href="services/roofing.html">Brickwork</a></li>
+            <li><a href="services/flooring.html">Landscaping</a></li>
+            <li><a href="services/general-work.html">Renovations</a></li>
+            <li><a href="services/other-services.html">Additional Services</a></li>
+          </ul>
+        </li>
+        <li class="site-nav__item">
+          <a class="site-nav__link" href="about.html">About</a>
+        </li>
+        <li class="site-nav__item">
+          <a class="site-nav__link" href="pricing/quote.html">Pricing</a>
+        </li>
+        <li class="site-nav__item">
+          <a class="site-nav__link" href="contact.html">Contact</a>
+        </li>
+      </ul>
     </nav>
+  </div>
 </header>
