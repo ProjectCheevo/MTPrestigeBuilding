@@ -1,94 +1,163 @@
-// ===== DOM READY =====
-document.addEventListener("DOMContentLoaded", () => {
-  // ===== SLIDESHOW =====
-  const slides = document.querySelectorAll(".slide");
-  let currentSlide = 0;
+const initHeroSlider = () => {
+  const slides = Array.from(document.querySelectorAll('[data-hero-slide]'));
+  if (slides.length === 0) return;
 
-  function showNextSlide() {
-    slides[currentSlide]?.classList.remove("active");
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide]?.classList.add("active");
-  }
+  let activeIndex = 0;
+  const interval = 5000;
 
-  if (slides.length > 0) {
-    setInterval(showNextSlide, 5000);
-  }
+  const setActiveSlide = (index) => {
+    slides.forEach((slide, idx) => {
+      slide.classList.toggle('is-active', idx === index);
+    });
+  };
 
-  // ===== FADE-IN OBSERVER =====
-  const fadeEls = document.querySelectorAll(".fade-in, .fade-in-up");
+  setActiveSlide(activeIndex);
+
+  setInterval(() => {
+    activeIndex = (activeIndex + 1) % slides.length;
+    setActiveSlide(activeIndex);
+  }, interval);
+};
+
+const initIntersectionAnimations = () => {
+  const animatedElements = document.querySelectorAll('.fade-in, .fade-in-up');
+  if (animatedElements.length === 0) return;
+
   const observer = new IntersectionObserver(
     (entries, obs) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
+          entry.target.classList.add('visible');
           obs.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.2 }
   );
-  fadeEls.forEach(el => observer.observe(el));
 
-  // ===== CAROUSEL =====
-  const track = document.querySelector(".carousel-track");
-  const prevBtn = document.querySelector(".carousel-btn.prev");
-  const nextBtn = document.querySelector(".carousel-btn.next");
-  const cards = document.querySelectorAll(".news-card");
+  animatedElements.forEach((element) => observer.observe(element));
+};
 
-  if (track && cards.length > 0) {
-    let currentIndex = 0;
+const initProjectsCarousel = () => {
+  const track = document.querySelector('[data-carousel-track]');
+  const viewport = document.querySelector('[data-carousel-viewport]');
+  const prevButton = document.querySelector('[data-carousel-prev]');
+  const nextButton = document.querySelector('[data-carousel-next]');
 
-    const getCardWidth = () => cards[0].offsetWidth + 24;
+  if (!track || !viewport || !prevButton || !nextButton) return;
 
-    const scrollToCard = (index) => {
-      const cardWidth = getCardWidth();
-      const maxIndex = cards.length - Math.floor(track.offsetWidth / cardWidth);
-      currentIndex = Math.max(0, Math.min(index, maxIndex));
-      track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
-    };
+  const getCardWidth = () => {
+    const firstChild = track.firstElementChild;
+    if (!firstChild) return 0;
+    const childWidth = firstChild.getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(track).gap || '0');
+    return childWidth + gap;
+  };
 
-    nextBtn?.addEventListener("click", () => scrollToCard(currentIndex + 1));
-    prevBtn?.addEventListener("click", () => scrollToCard(currentIndex - 1));
+  const getMaxIndex = () => {
+    const cardWidth = getCardWidth();
+    if (cardWidth === 0) return 0;
+    const visibleCards = Math.max(1, Math.floor(viewport.offsetWidth / cardWidth));
+    return Math.max(0, track.children.length - visibleCards);
+  };
 
-    window.addEventListener("resize", () => scrollToCard(currentIndex));
-  }
-});
+  let currentIndex = 0;
 
-// ===== LOGO ANIMATION ON LOAD =====
-window.addEventListener("load", () => {
-  document.querySelector(".logo-animation")?.classList.add("loaded");
-  document.querySelector(".logo")?.classList.add("loaded");
-});
+  const updateCarousel = () => {
+    const cardWidth = getCardWidth();
+    const maxIndex = getMaxIndex();
+    currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
 
-document.addEventListener("DOMContentLoaded", function() {
-    const burger = document.querySelector('.burger');
-    const navLinks = document.querySelector('.nav-links');
+    track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+    prevButton.disabled = currentIndex === 0;
+    nextButton.disabled = currentIndex === maxIndex;
+  };
 
-    burger.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-        const expanded = burger.getAttribute('aria-expanded') === 'true';
-        burger.setAttribute('aria-expanded', !expanded);
+  prevButton.addEventListener('click', () => {
+    currentIndex -= 1;
+    updateCarousel();
+  });
+
+  nextButton.addEventListener('click', () => {
+    currentIndex += 1;
+    updateCarousel();
+  });
+
+  const resizeObserver = new ResizeObserver(updateCarousel);
+  resizeObserver.observe(viewport);
+  Array.from(track.children).forEach((child) => resizeObserver.observe(child));
+
+  updateCarousel();
+};
+
+const initNavigation = () => {
+  const navToggle = document.querySelector('[data-nav-toggle]');
+  const nav = document.querySelector('[data-site-nav]');
+  const submenuToggles = Array.from(document.querySelectorAll('[data-submenu-toggle]'));
+  const navItems = submenuToggles.map((button) => button.closest('.has-submenu'));
+
+  if (navToggle && nav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+      document.body.classList.toggle('nav-open', isOpen);
     });
+
+    nav.addEventListener('click', (event) => {
+      const target = event.target;
+      if (target instanceof HTMLAnchorElement && window.matchMedia('(max-width: 960px)').matches) {
+        nav.classList.remove('is-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('nav-open');
+      }
+    });
+  }
+
+  submenuToggles.forEach((button, index) => {
+    const parentItem = navItems[index];
+    if (!parentItem) return;
+
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      parentItem.classList.toggle('is-open', !expanded);
+    });
+  });
+
+  const mq = window.matchMedia('(min-width: 961px)');
+  const handleDesktopReset = (event) => {
+    if (!event.matches) return;
+    nav?.classList.remove('is-open');
+    navToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+    submenuToggles.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    navItems.forEach((item) => item?.classList.remove('is-open'));
+  };
+
+  if (typeof mq.addEventListener === 'function') {
+    mq.addEventListener('change', handleDesktopReset);
+  } else if (typeof mq.addListener === 'function') {
+    mq.addListener(handleDesktopReset);
+  }
+};
+
+const initCurrentYear = () => {
+  const yearEl = document.getElementById('current-year');
+  if (yearEl) {
+    yearEl.textContent = String(new Date().getFullYear());
+  }
+};
+
+const ready = () => {
+  initNavigation();
+  initHeroSlider();
+  initIntersectionAnimations();
+  initProjectsCarousel();
+  initCurrentYear();
+};
+
+document.addEventListener('DOMContentLoaded', ready);
+
+window.addEventListener('load', () => {
+  document.querySelector('[data-brand]')?.classList.add('is-loaded');
 });
-
-// ===== INCLUDE HTML PARTIALS =====
-//async function includeHTML(id, url) {
-//  const container = document.getElementById(id);
-//  if (!container) return;
-// try {
-//    const res = await fetch(url);
-//    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-//    container.innerHTML = await res.text();
-//  } catch (e) {
-//    console.error(e);
-//    // Optional: container.innerHTML = "<!-- failed to load partial -->";
-//  }
-//}
-
-// Load your header + footer
-//includeHTML("site-header", "header.html");
-//includeHTML("site-footer", "footer.html");
-
-
-
-
