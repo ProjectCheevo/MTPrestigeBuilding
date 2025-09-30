@@ -60,6 +60,17 @@ window.addEventListener("load", () => {
   document.querySelector(".logo")?.classList.add("loaded");
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const burger = document.querySelector('.burger');
+    const navLinks = document.querySelector('.nav-links');
+
+    burger.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        const expanded = burger.getAttribute('aria-expanded') === 'true';
+        burger.setAttribute('aria-expanded', !expanded);
+    });
+});
+
 // ===== INCLUDE HTML PARTIALS =====
 //async function includeHTML(id, url) {
 //  const container = document.getElementById(id);
@@ -77,6 +88,7 @@ window.addEventListener("load", () => {
 // Load your header + footer
 //includeHTML("site-header", "header.html");
 //includeHTML("site-footer", "footer.html");
+
 
 
 
