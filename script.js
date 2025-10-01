@@ -1,3 +1,31 @@
+const initHeaderHeight = () => {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+
+  let frameId = 0;
+
+  const updateHeaderHeight = () => {
+    const measuredHeight = Math.round(header.getBoundingClientRect().height);
+    if (!measuredHeight) return;
+    document.documentElement.style.setProperty('--header-height', `${measuredHeight}px`);
+  };
+
+  const scheduleUpdate = () => {
+    if (frameId) {
+      cancelAnimationFrame(frameId);
+    }
+    frameId = requestAnimationFrame(updateHeaderHeight);
+  };
+
+  const resizeObserver = new ResizeObserver(scheduleUpdate);
+  resizeObserver.observe(header);
+
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('load', scheduleUpdate, { once: true });
+
+  scheduleUpdate();
+};
+
 const initHeroSlider = () => {
   const slides = Array.from(document.querySelectorAll('[data-hero-slide]'));
   if (slides.length === 0) return;
@@ -149,6 +177,7 @@ const initCurrentYear = () => {
 };
 
 const ready = () => {
+  initHeaderHeight();
   initNavigation();
   initHeroSlider();
   initIntersectionAnimations();
@@ -161,3 +190,4 @@ document.addEventListener('DOMContentLoaded', ready);
 window.addEventListener('load', () => {
   document.querySelector('[data-brand]')?.classList.add('is-loaded');
 });
+
