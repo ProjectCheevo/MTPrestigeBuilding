@@ -3,11 +3,18 @@ const initHeaderHeight = () => {
   if (!header) return;
 
   let frameId = 0;
+  let previousHeightValue = '';
 
   const updateHeaderHeight = () => {
     const measuredHeight = Math.round(header.getBoundingClientRect().height);
     if (!measuredHeight) return;
-    document.documentElement.style.setProperty('--header-height', `${measuredHeight}px`);
+    const nextValue = `${measuredHeight}px`;
+    if (nextValue === previousHeightValue) {
+      return;
+    }
+
+    previousHeightValue = nextValue;
+    document.documentElement.style.setProperty('--header-height', nextValue);
   };
 
   const scheduleUpdate = () => {
@@ -190,4 +197,5 @@ document.addEventListener('DOMContentLoaded', ready);
 window.addEventListener('load', () => {
   document.querySelector('[data-brand]')?.classList.add('is-loaded');
 });
+
 
