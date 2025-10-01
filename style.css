@@ -9,6 +9,7 @@
   --color-accent: #8a63ff;
   --color-accent-soft: rgba(138, 99, 255, 0.15);
   --header-height: 6.5rem;
+  --header-min-height: 6.5rem;
   --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
   color-scheme: dark;
 }
@@ -193,7 +194,7 @@ button {
 }
 
 .site-header__inner {
-  min-height: var(--header-height);
+  min-height: var(--header-min-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -821,5 +822,6 @@ button {
     justify-content: flex-end;
   }
 }
+
 
 
